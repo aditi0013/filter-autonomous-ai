@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { agents } from "../init/route";
+import { agents, postsByAgent } from "@/lib/store";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -19,7 +19,13 @@ export async function GET(request: Request) {
     );
   }
 
+  const posts = postsByAgent.get(agentId) ?? [];
+
   return NextResponse.json({
-    posts: [],
+    posts: [...posts].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() -
+        new Date(a.createdAt).getTime()
+    ),
   });
 }

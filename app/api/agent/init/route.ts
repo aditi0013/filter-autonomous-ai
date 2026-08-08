@@ -1,13 +1,5 @@
 import { NextResponse } from "next/server";
-
-type Agent = {
-  agentId: string;
-  name: string;
-  domain: string;
-};
-
-// Simple in-memory store for the prototype
-export const agents = new Map<string, Agent>();
+import { agents, postsByAgent, Agent } from "@/lib/store";
 
 export async function POST(request: Request) {
   try {
@@ -27,16 +19,16 @@ export async function POST(request: Request) {
 
     const agentId = crypto.randomUUID();
 
-    agents.set(agentId, {
+    const agent: Agent = {
       agentId,
       name: persona.name,
       domain: persona.domain,
-    });
+    };
 
-    return NextResponse.json(
-      { agentId },
-      { status: 201 }
-    );
+    agents.set(agentId, agent);
+    postsByAgent.set(agentId, []);
+
+    return NextResponse.json({ agentId }, { status: 201 });
   } catch {
     return NextResponse.json(
       { error: "Invalid JSON request" },
