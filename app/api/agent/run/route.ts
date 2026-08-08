@@ -13,12 +13,9 @@ export async function POST(request: Request) {
       );
     }
 
-    const posts = await runAgentCycle(agentId);
+    const result = await runAgentCycle(agentId);
 
-    return NextResponse.json({
-      published: posts.length,
-      posts,
-    });
+    return NextResponse.json(result);
   } catch (error) {
     console.error("Agent cycle failed:", error);
 
