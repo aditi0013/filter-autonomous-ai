@@ -11,7 +11,6 @@ export type MemoryCheckResult = {
   matchedTopic?: TopicCandidate;
 };
 
-// Simple in-memory memory for the prototype.
 const publishedMemory: MemoryRecord[] = [];
 
 const STOP_WORDS = new Set([
@@ -52,7 +51,6 @@ function similarity(a: string, b: string): number {
   }
 
   const intersection = [...wordsA].filter((word) => wordsB.has(word));
-
   const union = new Set([...wordsA, ...wordsB]);
 
   return intersection.length / union.size;
@@ -69,7 +67,6 @@ export function checkTopicCovered(
   topic: TopicCandidate
 ): MemoryCheckResult {
   for (const record of publishedMemory) {
-    // Exact URL match is a strong duplicate signal.
     if (record.topic.sourceUrl === topic.sourceUrl) {
       return {
         covered: true,
@@ -78,7 +75,6 @@ export function checkTopicCovered(
       };
     }
 
-    // Compare title + summary to detect substantially similar stories.
     const titleSimilarity = similarity(
       topic.title,
       record.topic.title
@@ -92,7 +88,8 @@ export function checkTopicCovered(
     if (titleSimilarity >= 0.5 || combinedSimilarity >= 0.45) {
       return {
         covered: true,
-        reason: "This topic is substantially similar to a previously covered story.",
+        reason:
+          "This topic is substantially similar to a previously covered story.",
         matchedTopic: record.topic,
       };
     }
@@ -100,6 +97,7 @@ export function checkTopicCovered(
 
   return {
     covered: false,
-    reason: "No substantially similar previously covered topic was found.",
+    reason:
+      "No substantially similar previously covered topic was found.",
   };
 }
