@@ -15,7 +15,7 @@ export type AgentCycleResult = {
 
 export async function runAgentCycle(
   agentId: string,
-  limit = 5
+  limit = 10
 ): Promise<AgentCycleResult> {
   const agent = agents.get(agentId);
 
