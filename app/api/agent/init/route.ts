@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
-import { agents, postsByAgent, Agent } from "@/lib/store";
+import {
+  agents,
+  postsByAgent,
+  cycleStateByAgent,
+  Agent,
+} from "@/lib/store";
 
 export async function POST(request: Request) {
   try {
@@ -27,6 +32,11 @@ export async function POST(request: Request) {
 
     agents.set(agentId, agent);
     postsByAgent.set(agentId, []);
+
+cycleStateByAgent.set(agentId, {
+  lastCycleAt: null,
+  cycleRunning: false,
+});
 
     return NextResponse.json({ agentId }, { status: 201 });
   } catch {

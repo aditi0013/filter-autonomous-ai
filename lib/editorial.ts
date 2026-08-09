@@ -11,6 +11,7 @@ export type EditorialDecision = {
   reason: string;
   relevance: number;
   timely: boolean;
+  postText: string;
 };
 
 export async function evaluateTopics(
@@ -53,9 +54,22 @@ Prefer stories that:
 
 For every topic, return:
 - publish: true or false
-- reason: concise explanation
+- reason: concise explanation of why FILTER selected or rejected it
 - relevance: integer from 1 to 10
 - timely: true or false
+- postText: ONLY when publish is true, write a concise original FILTER-style technology intelligence post
+
+FILTER postText requirements:
+
+- Do not copy the RSS summary.
+- Explain what happened.
+- Explain why it matters.
+- Mention the most important technical, product, developer, research, or industry implication.
+- Be concise and analytical.
+- Sound like FILTER, not like a generic news article.
+- Do not use hype, clickbait, filler, or generic phrases.
+- Do not invent facts that are not supported by the topic.
+- Prefer concrete implications over repeating the headline.
 
 Topics:
 

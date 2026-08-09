@@ -4,7 +4,12 @@ import {
   checkTopicCovered,
   recordPublishedTopic,
 } from "./memory";
-import { agents, postsByAgent, PublishedPost } from "./store";
+import {
+  agents,
+  postsByAgent,
+  PublishedPost,
+  getCycleState,
+} from "./store";
 
 export type AgentCycleResult = {
   discovered: number;
@@ -59,7 +64,7 @@ export async function runAgentCycle(
     const post: PublishedPost = {
       id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
-      text: decision.topic.summary,
+      text: decision.postText,
       rationale: decision.reason,
       sources: [decision.topic.sourceUrl],
       topic: decision.topic,
@@ -85,4 +90,37 @@ export async function runAgentCycle(
     published: publishedPosts,
     rejected,
   };
+}
+export async function tryRunAgentCycle(
+  agentId: string,
+  limit = 10
+): Promise<{
+  started: boolean;
+  result?: AgentCycleResult;
+}> {
+  const agent = agents.get(agentId);
+
+  if (!agent) {
+    throw new Error("Agent not found");
+  }
+
+  const state = getCycleState(agentId);
+
+  if (state.cycleRunning) {
+    return { started: false };
+  }
+
+  state.cycleRunning = true;
+  state.lastCycleAt = Date.now();
+
+  try {
+    const result = await runAgentCycle(agentId, limit);
+
+    return {
+      started: true,
+      result,
+    };
+  } finally {
+    state.cycleRunning = false;
+  }
 }

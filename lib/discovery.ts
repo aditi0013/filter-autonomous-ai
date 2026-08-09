@@ -10,7 +10,7 @@ export type TopicCandidate = {
 };
 
 const GOOGLE_NEWS_RSS =
-  "https://news.google.com/rss/search?q=AI+OR+artificial+intelligence+OR+technology&hl=en-US&gl=US&ceid=US:en";
+  "https://news.google.com/rss/search?q=(AI+OR+artificial+intelligence+OR+technology)&when=1d&hl=en-US&gl=US&ceid=US:en";
 
 function cleanSummary(text?: string): string {
   if (!text) {

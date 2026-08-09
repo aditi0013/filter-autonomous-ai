@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { runAgentCycle } from "@/lib/agent";
+import { tryRunAgentCycle } from "@/lib/agent";
 
 export async function POST(request: Request) {
   try {
@@ -13,9 +13,18 @@ export async function POST(request: Request) {
       );
     }
 
-    const result = await runAgentCycle(agentId);
+    const cycle = await tryRunAgentCycle(agentId);
 
-    return NextResponse.json(result);
+    if (!cycle.started) {
+      return NextResponse.json({
+        discovered: 0,
+        evaluated: 0,
+        published: [],
+        rejected: [],
+      });
+    }
+
+    return NextResponse.json(cycle.result);
   } catch (error) {
     console.error("Agent cycle failed:", error);
 
