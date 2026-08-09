@@ -208,4 +208,118 @@ Previously covered? → reject/skip
 New topic → available for future publishing
 
 Do not implement the publishing or scheduling layer yet.
-EOF
+## Prompt 5 — Autonomous Agent Cycle
+
+We are continuing the FILTER hackathon project.
+
+FILTER now has:
+
+- lib/discovery.ts
+  - Discovers live AI/technology topics using Google News RSS.
+- lib/editorial.ts
+  - Uses Gemini to evaluate discovered topics.
+- lib/memory.ts
+  - Detects previously covered or substantially similar topics.
+
+The next requirement is to connect these layers into one autonomous agent cycle.
+
+Implement the agent orchestration layer.
+
+Requirements:
+
+1. Create a dedicated module such as:
+   lib/agent.ts
+
+2. The agent cycle should:
+   - discover live topics
+   - evaluate them using the editorial layer
+   - check publishable topics against memory
+   - skip previously covered topics
+   - create published posts for new accepted topics
+   - record newly published topics in memory
+   - store published posts for the agent feed
+
+3. Preserve the existing agent initialization and feed behavior.
+
+4. Reuse the existing:
+   - TopicCandidate type
+   - editorial decision types
+   - memory functions
+   - agent/feed storage
+
+5. Keep the orchestration simple and modular.
+
+6. Do NOT add a database, vector database, embeddings service, or scheduling framework.
+
+7. Keep the implementation appropriate for a 20-minute Live Steer Challenge.
+
+The intended autonomous flow is:
+
+Google News
+↓
+Discovery
+↓
+Gemini Editorial Judgment
+↓
+Memory Check
+↓
+Already covered? → Skip
+New + valuable → Publish
+↓
+Record in Memory
+↓
+Agent Feed
+
+The goal is to demonstrate that FILTER is not simply displaying search results. It autonomously decides what deserves to become part of its feed while remembering previously published topics.
+
+Do not overengineer the solution.
+
+## Prompt 6 — FILTER UI and Autonomous Cycle Visualization
+
+We are continuing the FILTER hackathon project.
+
+FILTER now has a working autonomous backend cycle consisting of:
+
+Google News Discovery
+↓
+Gemini Editorial Judgment
+↓
+Memory / Duplicate Detection
+↓
+Publish or Reject
+
+Now create a simple UI that makes this autonomous behavior visible to the user.
+
+Requirements:
+
+1. Build the UI in app/page.tsx.
+
+2. The UI should:
+   - initialize a FILTER agent
+   - allow the user to run an autonomous FILTER cycle
+   - display how many stories were discovered
+   - display how many stories were evaluated
+   - display published stories
+   - display rejected stories
+   - show the editorial reason for rejection
+   - show when memory caused a topic to be rejected or skipped
+
+3. Make the autonomous behavior easy to understand visually.
+
+4. Keep the interface clean, responsive, and suitable for a hackathon demo.
+
+5. Do not add authentication, database infrastructure, or unnecessary UI complexity.
+
+6. The UI should consume the existing API rather than duplicating backend logic.
+
+7. Preserve the existing API contracts where practical.
+
+8. Keep the implementation simple enough to explain during a live demo.
+
+The goal is to make the following behavior obvious:
+
+Discover → Evaluate → Remember → Publish / Reject
+
+The UI should communicate that FILTER is an autonomous AI technology persona rather than a basic news feed.
+
+Do not overengineer the solution.
