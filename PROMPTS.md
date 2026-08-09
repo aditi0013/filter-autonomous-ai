@@ -323,3 +323,86 @@ Discover → Evaluate → Remember → Publish / Reject
 The UI should communicate that FILTER is an autonomous AI technology persona rather than a basic news feed.
 
 Do not overengineer the solution.
+## Prompt 7 — True Autonomous Publishing Through Feed
+
+We are continuing the FILTER hackathon project.
+
+The hackathon evaluator will:
+
+1. Call POST /api/agent/init exactly once.
+2. Then only call:
+   GET /api/agent/feed?agentId=...
+3. The evaluator will periodically request the feed.
+4. The evaluator will NOT call /api/agent/run.
+
+Therefore, FILTER must autonomously trigger its agent cycle through feed requests.
+
+Current architecture:
+
+Google News RSS
+↓
+Discovery
+↓
+Gemini Editorial Judgment
+↓
+Memory / Duplicate Detection
+↓
+Agent Cycle
+↓
+Published Feed
+
+Requirements:
+
+1. Modify GET /api/agent/feed so it can trigger an autonomous FILTER cycle when the agent is due.
+
+2. Reuse the existing runAgentCycle() logic.
+
+3. Add lightweight per-agent cycle state:
+   - lastCycleAt
+   - cycleRunning
+
+4. Add a simple cooldown of approximately 60 seconds.
+
+5. The first eligible feed request may trigger a cycle immediately.
+
+6. Subsequent feed requests during the cooldown must simply return the existing feed without running another cycle.
+
+7. Prevent concurrent cycles for the same agent.
+
+8. Preserve previously published posts.
+
+9. Keep posts newest-first.
+
+10. Keep POST /api/agent/run working for the existing demo UI.
+
+11. Preserve the required API contracts:
+
+POST /api/agent/init
+→ { "agentId": "..." }
+
+GET /api/agent/feed?agentId=...
+→ { "posts": [...] }
+
+12. Do not add a database, Redis, cron framework, vector database, embeddings, authentication, or unnecessary dependencies.
+
+13. Do not use setInterval/setTimeout for background scheduling. Repeated feed requests are the trigger opportunities.
+
+14. If an autonomous cycle fails, log the error server-side and return the existing feed rather than crashing the endpoint.
+
+15. Preserve the existing discovery, editorial, memory, and publishing architecture.
+
+16. Keep the implementation small and serverless-friendly.
+
+Testing requirements:
+
+- npm run build
+- POST /api/agent/init
+- GET /api/agent/feed?agentId=...
+- Verify the first eligible feed request can trigger a cycle.
+- Verify an immediate second request does not trigger another cycle.
+- Verify existing posts remain available.
+- Verify newest-first ordering.
+- Verify duplicate memory behavior still works.
+- Verify POST /api/agent/run still works.
+
+Do not overengineer the solution.
